@@ -44,7 +44,7 @@ namespace chk
 		double think()const { return m_Input * m_W; }
 		static double rnd() { return ::rand() * 2. / RAND_MAX - 1.; }
 		double learn(double delta) { m_dW += delta * m_Input; return delta * m_W; }
-		void adjust(double lr, size_t batch_size) { m_W -= lr * m_dW / batch_size; m_dW = 0.; }
+		void adjust(double dErr) { m_W -= dErr * m_dW; m_dW = 0.; }
 
 	protected:
 		// Inherited via ISerialize
@@ -61,7 +61,7 @@ namespace chk
 		neuron(vdb const& inp);
 		double sum()const;
 		void learn(double delta, vdb& upstream);
-		void adjust(double lr, size_t batch_size);
+		void adjust(double dErr);
 
 	protected:
 		// Inherited via ISerialize
@@ -80,7 +80,7 @@ namespace chk
 		layer(vdb const&, int);
 		void think();
 		vdb learn(vdb const&);
-		void adjust(double lr, size_t batch_size);
+		void adjust(double dErr);
 
 	protected:
 		// Inherited via ISerialize
@@ -95,7 +95,7 @@ namespace chk
 		std::vector<layer<relu_activ>> m_SharedTrunk;
 		layer<iden_activ> m_branchPolicy;
 		struct VALBRA { layer<relu_activ> hidden; layer<tanh_activ> out; } m_branchValue;
-		size_t m_Learns,m_Adjusts;
+		size_t m_Learns, m_Adjusts;
 
 	public:
 		void init();
@@ -103,7 +103,7 @@ namespace chk
 		vdb const& policy_logits() const { return m_branchPolicy; }
 		double value() const { return m_branchValue.out.front(); }
 		void learn(vdb const& dL_policy, double real_value);
-		void adjust(double lr, size_t batch_size);
+		void adjust(double dErr);
 		size_t get_learns()const { return m_Learns; }
 		size_t get_adjusts()const { return m_Adjusts; }
 
@@ -145,10 +145,10 @@ namespace chk
 	}
 
 	template<typename activ_func>
-	void layer<activ_func>::adjust(double lr, size_t batch_size)
+	void layer<activ_func>::adjust(double dErr)
 	{
 		for (auto& n : m_Cells)
-			n.adjust(lr, batch_size);
+			n.adjust(dErr);
 	}
 
 	template<typename activ_func>

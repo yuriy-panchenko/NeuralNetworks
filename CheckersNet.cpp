@@ -46,12 +46,12 @@ namespace chk
 		m_dBias += delta;
 	}
 
-	void neuron::adjust(double lr, size_t batch_size)
+	void neuron::adjust(double dErr)
 	{
 		for (auto& a : *this)
-			a.adjust(lr, batch_size);
+			a.adjust(dErr);
 
-		m_Bias -= lr * m_dBias / batch_size;
+		m_Bias -= dErr * m_dBias;
 		m_dBias = .0;
 	}
 
@@ -123,14 +123,14 @@ namespace chk
 		++m_Learns;
 	}
 
-	void net::adjust(double lr, size_t batch_size)
+	void net::adjust(double const dErr)
 	{
 		for (auto& l : m_SharedTrunk)
-			l.adjust(lr, batch_size);
+			l.adjust(dErr);
 
-		m_branchPolicy.adjust(lr, batch_size);
-		m_branchValue.hidden.adjust(lr, batch_size);
-		m_branchValue.out.adjust(lr, batch_size);
+		m_branchPolicy.adjust(dErr);
+		m_branchValue.hidden.adjust(dErr);
+		m_branchValue.out.adjust(dErr);
 		++m_Adjusts;
 	}
 
