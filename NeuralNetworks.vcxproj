@@ -153,13 +153,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="acson.h" />
+    <ClInclude Include="CheckersFast.h" />
     <ClInclude Include="CheckersNet.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="INetwork.h" />
+    <ClInclude Include="ISerialize.h" />
     <ClInclude Include="layer.h" />
     <ClInclude Include="Mash.h" />
     <ClInclude Include="Mash2D.h" />
     <ClInclude Include="NetProxy.h" />
+    <ClInclude Include="net_math.h" />
     <ClInclude Include="neuron.h" />
     <ClInclude Include="nnet.h" />
     <ClInclude Include="pch.h" />

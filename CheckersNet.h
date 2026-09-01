@@ -1,38 +1,11 @@
 #pragma once
 #include <vector>
-#include <fstream>
+#include "ISerialize.h"
+#include "net_math.h"
 
 namespace chk
 {
 	using vdb = std::vector<double>;
-
-	struct relu_activ
-	{
-		static double f(double x) { return x > .0 ? x : .0; }
-		static double df(double y) { return y > .0 ? 1. : .0; }
-	};
-
-	struct tanh_activ
-	{
-		static double f(double x) { return ::tanh(x); }
-		static double df(double y) { return 1. - y * y; }
-	};
-
-	struct iden_activ
-	{
-		static double f(double x) { return x; }
-		static double df(double y) { return 1.; }
-	};
-
-	class ISerialize abstract
-	{
-	public:
-		friend std::ifstream& operator>>(std::ifstream& s, ISerialize& o);
-		friend std::ofstream& operator<<(std::ofstream& s, ISerialize& o);
-	protected:
-		virtual void Serialize(std::ofstream&) = 0;
-		virtual void Serialize(std::ifstream&) = 0;
-	};
 
 	class acson
 		:public ISerialize
@@ -92,9 +65,9 @@ namespace chk
 		:public ISerialize
 	{
 		vdb m_Input;
-		std::vector<layer<relu_activ>> m_SharedTrunk;
-		layer<iden_activ> m_branchPolicy;
-		struct VALBRA { layer<relu_activ> hidden; layer<tanh_activ> out; } m_branchValue;
+		std::vector<layer<math::relu_activ>> m_SharedTrunk;
+		layer<math::iden_activ> m_branchPolicy;
+		struct VALBRA { layer<math::relu_activ> hidden; layer<math::tanh_activ> out; } m_branchValue;
 		size_t m_Learns, m_Adjusts;
 
 	public:

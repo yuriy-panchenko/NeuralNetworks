@@ -5,18 +5,6 @@ namespace chk
 {
 	constexpr unsigned __int32 magic_number{ 0x35ABF801 };
 
-	std::ifstream& operator>>(std::ifstream& s, ISerialize& o)
-	{
-		o.Serialize(s);
-		return s;
-	}
-
-	std::ofstream& operator<<(std::ofstream& s, ISerialize& o)
-	{
-		o.Serialize(s);
-		return s;
-	}
-
 	neuron::neuron(vdb const& inp)
 		:m_Bias{ }
 		, m_dBias{}
