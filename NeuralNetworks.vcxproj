@@ -169,6 +169,7 @@
     <ClInclude Include="Turbulance.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CheckersFast.cpp" />
     <ClCompile Include="CheckersNet.cpp" />
     <ClCompile Include="layer.cpp" />
     <ClCompile Include="Mash.cpp" />

@@ -2,6 +2,7 @@
 #include <vector>
 #include "ISerialize.h"
 #include "net_math.h"
+#include "CheckersFast.h"
 
 namespace chk
 {

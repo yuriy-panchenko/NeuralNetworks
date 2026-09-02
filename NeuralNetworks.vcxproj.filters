@@ -92,5 +92,8 @@
     <ClCompile Include="CheckersNet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CheckersFast.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
