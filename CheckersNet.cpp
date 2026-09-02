@@ -3,8 +3,6 @@
 
 namespace chk
 {
-	constexpr unsigned __int32 magic_number{ 0x35ABF801 };
-
 	neuron::neuron(vdb const& inp)
 		:m_Bias{ }
 		, m_dBias{}

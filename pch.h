@@ -10,4 +10,6 @@
 // add headers that you want to pre-compile here
 #include "framework.h"
 
+constexpr unsigned __int32 magic_number{ 0x35ABF801 };
+
 #endif //PCH_H
