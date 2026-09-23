@@ -167,6 +167,7 @@
     <ClInclude Include="nnet.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Turbulance.h" />
+    <ClInclude Include="universal.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CheckersFast.cpp" />

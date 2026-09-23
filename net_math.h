@@ -2,21 +2,27 @@
 
 namespace math
 {
+	template<typename T>
 	struct relu_activ
 	{
-		static double f(double x) { return x > .0 ? x : .0; }
-		static double df(double y) { return y > .0 ? 1. : .0; }
+		using type = T;
+		static T f(T x) { return x > T(0) ? x : T(0); }
+		static T df(T y) { return y > T(0) ? T(1) : T(0); }
 	};
 
+	template<typename T>
 	struct tanh_activ
 	{
-		static double f(double x) { return ::tanh(x); }
-		static double df(double y) { return 1. - y * y; }
+		using type = T;
+		static T f(T x) { return ::tanh(x); }
+		static T df(T y) { return T(1) - y * y; }
 	};
 
+	template<typename T>
 	struct iden_activ
 	{
-		static double f(double x) { return x; }
-		static double df(double y) { return 1.; }
-	};
+		using type = T;
+		static T f(T x) { return x; }
+		static T df(T y) { return T(1); }
+	};	
 }

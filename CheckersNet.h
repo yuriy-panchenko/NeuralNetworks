@@ -6,6 +6,7 @@
 
 namespace chk
 {
+	using Type = double;
 	using vdb = std::vector<double>;
 
 	class acson
@@ -66,9 +67,9 @@ namespace chk
 		:public ISerialize
 	{
 		vdb m_Input;
-		std::vector<layer<math::relu_activ>> m_SharedTrunk;
-		layer<math::iden_activ> m_branchPolicy;
-		struct VALBRA { layer<math::relu_activ> hidden; layer<math::tanh_activ> out; } m_branchValue;
+		std::vector<layer<math::relu_activ<Type>>> m_SharedTrunk;
+		layer<math::iden_activ<Type>> m_branchPolicy;
+		struct VALBRA { layer<math::relu_activ<Type>> hidden; layer<math::tanh_activ<Type>> out; } m_branchValue;
 		size_t m_Learns, m_Adjusts;
 
 	public:

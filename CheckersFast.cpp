@@ -3,57 +3,6 @@
 
 namespace chkf
 {
-	matrix::matrix(size_t acson_count, size_t neuron_count)
-		:m_Cx{ acson_count }
-		, m_Cy{ neuron_count }
-		, m_Data(acson_count* neuron_count)
-	{}
-
-	matrix::matrix(size_t acsons, size_t neurons, double initial_value)
-		:m_Cx{ acsons }
-		, m_Cy{ neurons }
-		, m_Data(acsons* neurons, initial_value)
-	{}
-
-	inline double const* matrix::row(size_t row_index) const
-	{
-		return ptr() + row_index * m_Cx;
-	}
-
-	double* matrix::row(size_t index)
-	{
-		return ptr() + index * m_Cx;
-	}
-
-	inline double* matrix::ptr()
-	{
-		return m_Data.data();
-	}
-
-	inline double const* matrix::ptr()const
-	{
-		return m_Data.data();
-	}
-
-	void matrix::randomize(double scale)
-	{
-		for (auto& val : m_Data)
-			val = rnd() * scale;
-
-	}
-
-	double matrix::product(size_t iRow, vdb const& inp) const
-	{
-		double ret{};
-		auto pRow{ row(iRow) };
-
-		for (auto val : inp)
-			ret += val * *pRow++;
-
-		return ret;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	net::net()
 		:/*m_Input{ 128 }
 		,*/ m_branchPolicy{ 128, 896 }
