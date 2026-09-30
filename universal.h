@@ -178,6 +178,13 @@ namespace uni
 	template<typename activ_func>
 	void layer<activ_func>::shock()
 	{
-		m_Weights.row(rand() % m_Weights.neurons())[rand() % m_Weights.acsons()] = random_device<T>::generate() * std::sqrt(T(2) / m_Weights.acsons());
+		for (size_t i = 0; i < m_Weights.neurons(); i++)
+		{
+			auto const ind{ rand() % m_Weights.acsons() };
+			auto& w{ m_Weights.row(i)[ind] };
+			auto const newW{ random_device<T>::generate() * std::sqrt(T(2) / m_Weights.acsons()) };
+			w = newW;
+		}
+		//m_Weights.row(rand() % m_Weights.neurons())[rand() % m_Weights.acsons()] = random_device<T>::generate() * std::sqrt(T(2) / m_Weights.acsons());
 	}
 }

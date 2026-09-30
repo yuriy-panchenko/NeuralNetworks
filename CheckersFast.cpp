@@ -98,5 +98,9 @@ namespace chkf
 	{
 		for (auto& l : m_SharedTrunk)
 			l.shock();
+
+		m_branchPolicy.shock();
+		m_branchValue.hidden.shock();
+		m_branchValue.tail.shock();
 	}
 }
