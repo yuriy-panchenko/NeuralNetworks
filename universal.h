@@ -146,7 +146,7 @@ namespace uni
 			for (size_t iAx = 0; iAx < inp.size(); ++iAx)
 			{
 				*(pdWs + iAx) += delta * inp[iAx];
-				upstream[iAx] = delta * *(pWs + iAx);
+				upstream[iAx] += delta * *(pWs + iAx);
 			}
 
 			m_dBias[iCell] += delta;
