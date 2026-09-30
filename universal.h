@@ -71,6 +71,7 @@ namespace uni
 		std::vector<T> const& think(std::vector<T> const&);
 		std::vector<T> learn(std::vector<T> const& inp, std::vector<T> const&);
 		void adjust(T lcoo);
+		void shock();
 
 	private:
 		std::vector<T> m_Bias, m_dBias;
@@ -90,6 +91,7 @@ namespace uni
 		, m_Cy{ neurons }
 		, m_Data(acsons* neurons, initial_value)
 	{}
+
 
 	template<typename T>
 	void matrix<T>::randomize(T scale)
@@ -171,5 +173,11 @@ namespace uni
 			m_Bias.begin(),
 			[lcoo](T b, T db) {return b - lcoo * db; });
 		std::fill(m_dBias.begin(), m_dBias.end(), T(0));
+	}
+
+	template<typename activ_func>
+	void layer<activ_func>::shock()
+	{
+		m_Weights.row(rand() % m_Weights.neurons())[rand() % m_Weights.acsons()] = random_device<T>::generate() * std::sqrt(T(2) / m_Weights.acsons());
 	}
 }

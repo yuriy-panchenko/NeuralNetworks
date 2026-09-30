@@ -56,7 +56,7 @@ namespace chk
 		void think();
 		vdb learn(vdb const&);
 		void adjust(double dErr);
-
+	
 	protected:
 		// Inherited via ISerialize
 		void Serialize(std::ofstream&) override;

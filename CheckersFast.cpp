@@ -93,4 +93,10 @@ namespace chkf
 			s >> l;
 		s >> m_branchPolicy >> m_branchValue.hidden >> m_branchValue.tail;
 	}
+
+	void net::shock()
+	{
+		for (auto& l : m_SharedTrunk)
+			l.shock();
+	}
 }

@@ -14,7 +14,6 @@ namespace chkf
 	class net
 		:public ISerialize
 	{
-		//vdb m_Input;
 		std::vector<uni::layer<math::relu_activ<Type>>> m_SharedTrunk;
 		uni::layer<math::iden_activ<Type>> m_branchPolicy;
 		struct { uni::layer<math::relu_activ<Type>> hidden; uni::layer<math::tanh_activ<Type>> tail; } m_branchValue;
@@ -34,6 +33,7 @@ namespace chkf
 		void adjust(double lcoo);
 		size_t get_learns()const { return m_Learns; }
 		size_t get_adjusts()const { return m_Adjusts; }
+		void shock();
 
 	protected:
 		// Inherited via ISerialize
