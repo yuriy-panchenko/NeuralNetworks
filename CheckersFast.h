@@ -10,13 +10,14 @@ namespace chkf
 	using Type = double;
 	using vdb = std::vector<Type>;
 	using cdb = std::vector<Type const>;
+	using RELU_layer = uni::layer<math::relu_activ<Type>>;
 
 	class net
 		:public ISerialize
 	{
-		std::vector<uni::layer<math::relu_activ<Type>>> m_SharedTrunk;
+		std::vector<RELU_layer> m_SharedTrunk;
 		uni::layer<math::iden_activ<Type>> m_branchPolicy;
-		struct { uni::layer<math::relu_activ<Type>> hidden; uni::layer<math::tanh_activ<Type>> tail; } m_branchValue;
+		struct { RELU_layer hidden; uni::layer<math::tanh_activ<Type>> tail; } m_branchValue;
 		size_t m_Learns, m_Adjusts;
 
 	public:

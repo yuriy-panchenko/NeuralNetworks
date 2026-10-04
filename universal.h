@@ -1,4 +1,5 @@
 #pragma once
+#include <numeric>
 
 namespace uni
 {
@@ -31,7 +32,7 @@ namespace uni
 		T const* ptr_end()const { return ptr() + m_Cx * m_Cy; }
 		T* ptr_end() { return ptr() + m_Cx * m_Cy; }
 		void randomize(T scale);
-		T product(size_t iRow, std::vector<T> const& inp)const;
+		T product(size_t iRow, std::vector<T> const& inp, T init = T{})const;
 		size_t acsons()const { return m_Cx; }
 		size_t neurons()const { return m_Cy; }
 		void fill(T val) { std::fill(m_Data.begin(), m_Data.end(), val); }
@@ -101,15 +102,16 @@ namespace uni
 	}
 
 	template<typename T>
-	T matrix<T>::product(size_t iRow, std::vector<T> const& inp) const
+	T matrix<T>::product(size_t iRow, std::vector<T> const& inp, T init) const
 	{
-		T ret{};
+		return std::inner_product(ptr() + iRow * m_Cx, ptr() + (iRow + 1) * m_Cx, inp.begin(), init);
+		/*T ret{};
 		auto pRow{ row(iRow) };
 
 		for (auto val : inp)
 			ret += val * *pRow++;
 
-		return ret;
+		return ret;*/
 	}
 
 	template<typename activ>
@@ -127,7 +129,7 @@ namespace uni
 	std::vector<typename activ::type> const& layer<activ>::think(std::vector<T> const& inp)
 	{
 		for (size_t i = 0; i < std::vector<T>::size(); ++i)
-			(*this)[i] = activ::f(m_Bias[i] + m_Weights.product(i, inp));
+			(*this)[i] = activ::f(m_Weights.product(i, inp, m_Bias[i]));
 
 		return *this;
 	}
