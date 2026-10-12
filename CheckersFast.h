@@ -34,7 +34,7 @@ namespace chkf
 		using out_pair = std::pair<vdb, double>;
 		struct topology
 		{
-			std::vector<size_t>
+			std::vector<uint64_t>
 				trunk{ 256, 256, 128 },
 				policyHidden{ },      // empty = same as today
 				valueHidden{ 64 };

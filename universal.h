@@ -21,7 +21,7 @@ namespace uni
 		size_t m_Cx, m_Cy;
 		std::vector<T> m_Data;
 	public:
-		matrix() = default;
+		matrix() :m_Cx{}, m_Cy{} {}
 		matrix(size_t acson_count, size_t neuron_count);
 		matrix(size_t acsons, size_t neurons, T initial_value);
 		matrix(matrix&&) = default;

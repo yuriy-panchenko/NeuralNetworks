@@ -105,20 +105,20 @@ namespace chkf
 		++m_Adjusts;
 	}
 
-	std::ofstream& operator<<(std::ofstream& s, std::vector<size_t> const& v)
+	std::ofstream& operator<<(std::ofstream& s, std::vector<uint64_t> const& v)
 	{
 		unsigned __int64 u64{ v.size() };
 		s.write(reinterpret_cast<char const*>(&u64), sizeof(u64));
-		s.write(reinterpret_cast<char const*>(v.data()), u64 * sizeof(size_t));
+		s.write(reinterpret_cast<char const*>(v.data()), u64 * sizeof(uint64_t));
 		return s;
 	}
 
-	std::ifstream& operator>>(std::ifstream& s, std::vector<size_t>& v)
+	std::ifstream& operator>>(std::ifstream& s, std::vector<uint64_t>& v)
 	{
 		unsigned __int64 u64;
 		s.read(reinterpret_cast<char*>(&u64), sizeof(u64));
 		v.resize(u64);
-		s.read(reinterpret_cast<char*>(v.data()), u64 * sizeof(size_t));
+		s.read(reinterpret_cast<char*>(v.data()), u64 * sizeof(uint64_t));
 		return s;
 	}
 
@@ -185,6 +185,25 @@ namespace chkf
 		m_branchValue.tail.shock();
 	}*/
 
+	net::topology net::get_topology() const
+	{
+		topology ret;
+		ret.trunk.clear();
+		ret.policyHidden.clear();
+		ret.valueHidden.clear();
+
+		for (auto& l : m_sharedTrunk)
+			ret.trunk.push_back(l.size());
+
+		for (auto& l : m_policyHidden)
+			ret.trunk.push_back(l.size());
+
+		for (auto& l : m_valueHidden)
+			ret.trunk.push_back(l.size());
+
+		return ret;
+	}
+
 	void net::reshape(topology const& s)
 	{
 		m_sharedTrunk.clear();
@@ -209,7 +228,7 @@ namespace chkf
 			in = w;
 		}
 
-		m_policyOut = { in, 896 };
+		m_policyOut = { in, move_space_count };
 
 		in = trunkOut;
 
