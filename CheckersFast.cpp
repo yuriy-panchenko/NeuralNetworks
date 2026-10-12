@@ -4,50 +4,83 @@
 namespace chkf
 {
 	net::net()
-		: m_branchPolicy{ 128, 896 }
-		, m_branchValue{ {128, 64}, {64, 1} }
-		, m_Learns{}
+		:net{ topology{} }
+	{}
+
+	net::net(topology const& s)
+		: m_Learns{}
 		, m_Adjusts{}
 	{
-		m_SharedTrunk.reserve(3);
-		m_SharedTrunk.emplace_back(128, 256);
-		m_SharedTrunk.emplace_back(256, 256);
-		m_SharedTrunk.emplace_back(256, 128);
+		reshape(s);
 	}
 
 	net::out_pair net::think(vdb const& inp)
 	{
 		auto* pOut{ &inp };
 
-		for (auto& l : m_SharedTrunk)
+		for (auto& l : m_sharedTrunk)
 			pOut = &l.think(*pOut);
 
-		m_branchPolicy.think(*pOut);
+		auto const pSharedOut{ pOut };
 
-		pOut = &m_branchValue.hidden.think(*pOut);
-		m_branchValue.tail.think(*pOut);
+		for (auto& l : m_policyHidden)
+			pOut = &l.think(*pOut);
+		m_policyOut.think(*pOut);
+
+		pOut = pSharedOut;
+		for (auto& l : m_valueHidden)
+			pOut = &l.think(*pOut);
+		m_valueOut.think(*pOut);
 
 		return get_out();
 	}
 
 	void net::learn(vdb const& inp, vdb const& dL_policy, double real_value)
 	{
-		auto itShared{ m_SharedTrunk.crbegin() };
-		auto const up_policy{ m_branchPolicy.learn(*itShared, dL_policy) };          // 128-dim
-		vdb const dL_value{ (value() - real_value) * 2. };
-		auto const up_hidden{ m_branchValue.tail.learn(m_branchValue.hidden,dL_value) };         // 64-dim
-		auto const up_value{ m_branchValue.hidden.learn(*itShared, up_hidden) };     // 128-dim
+		auto itShared{ m_sharedTrunk.crbegin() };
 
-		auto trunk_grad{ up_policy };
+		vdb up_value, trunk_grad;
+		{
+			vdb const dL_value{ (value() - real_value) * 2. };
+			vdb const* pOut{ &(m_valueHidden.empty() ? *itShared : m_valueHidden.back()) };
+			auto err{ m_valueOut.learn(*pOut, dL_value) };
+
+			for (auto iter{ m_valueHidden.rbegin() }; iter != m_valueHidden.rend(); ++iter)
+			{
+				if (std::next(iter) == m_valueHidden.rend())	//	first layer
+					pOut = &*itShared;
+				else pOut = &*std::next(iter);
+
+				err = iter->learn(*pOut, err);
+			}
+
+			std::swap(up_value, err);
+		}
+		{
+			vdb const* pOut{ &(m_policyHidden.empty() ? *itShared : m_policyHidden.back()) };
+			auto err{ m_policyOut.learn(*pOut, dL_policy) };
+
+			for (auto iter{ m_policyHidden.rbegin() }; iter != m_policyHidden.rend(); ++iter)
+			{
+				if (std::next(iter) == m_policyHidden.rend())	//	first layer
+					pOut = &*itShared;
+				else pOut = &*std::next(iter);
+
+				err = iter->learn(*pOut, err);
+			}
+
+			std::swap(trunk_grad, err);
+		}
+
 		auto iter{ up_value.begin() };
 
 		for (auto& val : trunk_grad)
 			val += *iter++;
 
-		for (auto it{ m_SharedTrunk.rbegin() }; it != m_SharedTrunk.rend(); ++it)
+		for (auto it{ m_sharedTrunk.rbegin() }; it != m_sharedTrunk.rend(); ++it)
 		{
 			itShared = std::next(it);
-			if (itShared == m_SharedTrunk.crend())
+			if (itShared == m_sharedTrunk.crend())
 				trunk_grad = it->learn(inp, trunk_grad);
 			else
 				trunk_grad = it->learn(*itShared, trunk_grad);
@@ -58,13 +91,47 @@ namespace chkf
 
 	void net::adjust(double lcoo)
 	{
-		for (auto& l : m_SharedTrunk)
+		for (auto& l : m_sharedTrunk)
 			l.adjust(lcoo);
 
-		m_branchPolicy.adjust(lcoo);
-		m_branchValue.hidden.adjust(lcoo);
-		m_branchValue.tail.adjust(lcoo);
+		for (auto& l : m_policyHidden)
+			l.adjust(lcoo);
+		m_policyOut.adjust(lcoo);
+
+		for (auto& l : m_valueHidden)
+			l.adjust(lcoo);
+		m_valueOut.adjust(lcoo);
+
 		++m_Adjusts;
+	}
+
+	std::ofstream& operator<<(std::ofstream& s, std::vector<size_t> const& v)
+	{
+		unsigned __int64 u64{ v.size() };
+		s.write(reinterpret_cast<char const*>(&u64), sizeof(u64));
+		s.write(reinterpret_cast<char const*>(v.data()), u64 * sizeof(size_t));
+		return s;
+	}
+
+	std::ifstream& operator>>(std::ifstream& s, std::vector<size_t>& v)
+	{
+		unsigned __int64 u64;
+		s.read(reinterpret_cast<char*>(&u64), sizeof(u64));
+		v.resize(u64);
+		s.read(reinterpret_cast<char*>(v.data()), u64 * sizeof(size_t));
+		return s;
+	}
+
+	std::ofstream& operator<<(std::ofstream& s, net::topology const& t)
+	{
+		s << t.trunk << t.policyHidden << t.valueHidden;
+		return s;
+	}
+
+	std::ifstream& operator>>(std::ifstream& s, net::topology& t)
+	{
+		s >> t.trunk >> t.policyHidden >> t.valueHidden;
+		return s;
 	}
 
 	void net::Serialize(std::ofstream& s)
@@ -73,9 +140,16 @@ namespace chkf
 		s.write(reinterpret_cast<char const*>(&m_Learns), sizeof m_Learns);
 		s.write(reinterpret_cast<char const*>(&m_Adjusts), sizeof m_Adjusts);
 
-		for (auto& l : m_SharedTrunk)
+		s << get_topology();
+
+		for (auto& l : m_sharedTrunk)
 			s << l;
-		s << m_branchPolicy << m_branchValue.hidden << m_branchValue.tail;
+		for (auto& l : m_policyHidden)
+			s << l;
+		for (auto& l : m_valueHidden)
+			s << l;
+
+		s << m_policyOut << m_valueOut;
 	}
 
 	void net::Serialize(std::ifstream& s)
@@ -88,12 +162,20 @@ namespace chkf
 		s.read(reinterpret_cast<char*>(&m_Learns), sizeof m_Learns);
 		s.read(reinterpret_cast<char*>(&m_Adjusts), sizeof m_Adjusts);
 
-		for (auto& l : m_SharedTrunk)
+		topology sh;
+		s >> sh;
+		reshape(sh);
+		for (auto& l : m_sharedTrunk)
 			s >> l;
-		s >> m_branchPolicy >> m_branchValue.hidden >> m_branchValue.tail;
+		for (auto& l : m_policyHidden)
+			s >> l;
+		for (auto& l : m_valueHidden)
+			s >> l;
+
+		s >> m_policyOut >> m_valueOut;
 	}
 
-	void net::shock()
+	/*void net::shock()
 	{
 		for (auto& l : m_SharedTrunk)
 			l.shock();
@@ -101,5 +183,42 @@ namespace chkf
 		m_branchPolicy.shock();
 		m_branchValue.hidden.shock();
 		m_branchValue.tail.shock();
+	}*/
+
+	void net::reshape(topology const& s)
+	{
+		m_sharedTrunk.clear();
+		m_policyHidden.clear();
+		m_valueHidden.clear();
+
+		auto in{ board_encoding_size };
+
+		for (auto w : s.trunk)
+		{
+			m_sharedTrunk.emplace_back(in, w);
+			in = w;
+		}
+
+		size_t const trunkOut{ in };                        // heads start from here
+
+		in = trunkOut;
+
+		for (auto w : s.policyHidden)
+		{
+			m_policyHidden.emplace_back(in, w);
+			in = w;
+		}
+
+		m_policyOut = { in, 896 };
+
+		in = trunkOut;
+
+		for (auto w : s.valueHidden)
+		{
+			m_valueHidden.emplace_back(in, w);
+			in = w;
+		}
+
+		m_valueOut = { in, 1 };
 	}
 }

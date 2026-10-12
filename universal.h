@@ -21,9 +21,13 @@ namespace uni
 		size_t m_Cx, m_Cy;
 		std::vector<T> m_Data;
 	public:
+		matrix() = default;
 		matrix(size_t acson_count, size_t neuron_count);
 		matrix(size_t acsons, size_t neurons, T initial_value);
 		matrix(matrix&&) = default;
+
+		matrix& operator=(matrix const&) = default;
+		matrix& operator=(matrix&&) = default;
 
 		T const* row(size_t row_index)const { return ptr() + row_index * m_Cx; }
 		T* row(size_t index) { return ptr() + index * m_Cx; }
@@ -51,6 +55,10 @@ namespace uni
 		layer(layer const&) = default;
 		layer(layer&&) = default;
 		layer(size_t acsons, size_t neurons);
+
+		layer& operator=(layer const&) = default;
+		layer& operator=(layer&&) = default;
+
 		// Inherited via ISerialize
 		void Serialize(std::ofstream& s) override
 		{
