@@ -4,8 +4,7 @@
 namespace chkf
 {
 	net::net()
-		:/*m_Input{ 128 }
-		,*/ m_branchPolicy{ 128, 896 }
+		: m_branchPolicy{ 128, 896 }
 		, m_branchValue{ {128, 64}, {64, 1} }
 		, m_Learns{}
 		, m_Adjusts{}
