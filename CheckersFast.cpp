@@ -196,10 +196,10 @@ namespace chkf
 			ret.trunk.push_back(l.size());
 
 		for (auto& l : m_policyHidden)
-			ret.trunk.push_back(l.size());
+			ret.policyHidden.push_back(l.size());
 
 		for (auto& l : m_valueHidden)
-			ret.trunk.push_back(l.size());
+			ret.valueHidden.push_back(l.size());
 
 		return ret;
 	}
