@@ -73,7 +73,7 @@ namespace chk
 		size_t m_Learns, m_Adjusts;
 
 	public:
-		void init();
+		//void init();
 		void think(vdb const& inp);
 		vdb const& policy_logits() const { return m_branchPolicy; }
 		double value() const { return m_branchValue.out.front(); }

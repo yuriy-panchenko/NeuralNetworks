@@ -55,7 +55,7 @@ namespace chk
 			s >> a;
 	}
 
-	void net::init()
+	/*void net::init()
 	{
 		m_Input.resize(128);
 		m_SharedTrunk.clear();
@@ -74,7 +74,7 @@ namespace chk
 		m_branchValue.out = { m_branchValue.hidden, 1 };
 
 		m_Learns = m_Adjusts = 0ull;
-	}
+	}*/
 
 	void net::think(vdb const& inp)
 	{
