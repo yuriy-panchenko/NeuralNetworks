@@ -43,6 +43,8 @@ namespace chkf
 	public:
 		net();
 		net(topology const&);
+		net(net const& oth) = default;
+
 		void init() {}
 		out_pair think(vdb const& inp);
 		vdb const& policy_logits() const { return m_policyOut; }

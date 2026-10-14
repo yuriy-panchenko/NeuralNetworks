@@ -24,6 +24,7 @@ namespace uni
 		matrix() :m_Cx{}, m_Cy{} {}
 		matrix(size_t acson_count, size_t neuron_count);
 		matrix(size_t acsons, size_t neurons, T initial_value);
+		matrix(matrix const&) = default;
 		matrix(matrix&&) = default;
 
 		matrix& operator=(matrix const&) = default;
